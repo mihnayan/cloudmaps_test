@@ -99,6 +99,23 @@ module.exports = {
     });
   },
 
+  activationEmail: function(req, res) {
+    if (!req.session.user) {
+      return res.redirect('/login');
+    }
+    let email = req.session.user.email;
+    let id = req.session.user.id;
+    let psw = req.session.user.password;
+    delete req.session.user;
+    EmailService.sendActivationEmail(email, id, psw)
+        .then(() => {
+          return res.redirect('/login')
+        })
+        .catch(error => {
+          return res.view('user/error', {message: 'При отправке сообщения об активации произошла ошибка: ' + error.message});
+        });
+  },
+
   friends: function(req, res){
     if(req.xhr){
       switch(req.method){
