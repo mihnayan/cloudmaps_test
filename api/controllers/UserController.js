@@ -225,7 +225,7 @@ module.exports = {
 
   avatar: function(req, res){
     var fs = require('fs');
-    var avatar_dir = sails.config.rootPath + '/avatars/';
+    var avatar_dir = sails.config.appPath + '/avatars/';
     if(req.method == 'GET'){
       var avatar = avatar_dir + req.param('id') + '.jpg';
       fs.stat(avatar, function(error, stats){
@@ -241,7 +241,9 @@ module.exports = {
       });
     }
     else if(req.method == 'POST'){
-      req.file('file').upload({}, function(error, files){
+      req.file('file').upload({
+        dirname: avatar_dir
+      }, function(error, files){
         if(error)
           return res.negotiate(error);
         else{

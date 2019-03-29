@@ -156,33 +156,35 @@ block scripts
           multi_selection: false,
           filters: {
             mime_types : [
-                { title : "Image files", extensions : "jpg, jpeg" },
+                { title : "Image files", extensions : "jpg,jpeg" },
             ],
             max_file_size: "2000kb",
           },
           resize:{
             width: 200,
             height: 200
+          },
+          init: {
+            FilesAdded: function(up, files) {
+              if(files.length){
+                uploader.start();
+              }
+            },
+            FileUploaded: function(up, file, result) {
+              if(result.status == 200){
+                var src = $('#avatar').attr('src').split('?',1)[0]+ '?_'+ new Date().getTime();
+                $('#avatar').attr('src', src);
+              }
+              else {
+                alert(result.response);
+              }
+            },
+            Error: function(up, error) {
+              console.error(error);
+            }
           }
       });
-
       uploader.init();
-
-      uploader.bind('FilesAdded', function(up, files){
-        if(files.length){
-          uploader.start();
-        }
-      });
-
-      uploader.bind('FileUploaded', function(up, file, result){
-        if(result.status == 200){
-          var src = $('#avatar').attr('src').split('?',1)[0]+ '?_'+ new Date().getTime();
-          $('#avatar').attr('src', src);
-        }
-        else{
-          alert(result.response);
-        }
-      });
       
       io.socket.get('/user/subscribe', function(resData, jwres){
         return;
