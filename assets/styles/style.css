@@ -1,3 +1,15 @@
 .vmiddle{
   vertical-align: middle !important;
 }
+
+.user-status {
+  text-align: center;
+}
+
+.user-status--online {
+  color: green;
+}
+
+.user-status--offline {
+  color: gray;
+}

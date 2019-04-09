@@ -129,6 +129,9 @@ module.exports = {
                 if(error)
                   return res.negotiate(error);
                 else{
+                  friends.forEach(friend => {
+                    friend.online = UserService.isUserOnline(friend.id);
+                  });
                   return res.view({friends: friends});
                 }
               });
@@ -173,7 +176,11 @@ module.exports = {
               return res.negotiate(error);
             }
             else {
-              return res.view({requests: _.map(requests, function(request){return request.id_requesting;})});
+              let users = _.map(requests, function(request){return request.id_requesting;});
+              users.forEach(user => {
+                user.online = UserService.isUserOnline(user.id);
+              });
+              return res.view({requests: users});
             }
           });
           break;
@@ -260,7 +267,10 @@ module.exports = {
   },
 
   logout: function(req, res){
-    delete req.session.user;
+    if (req.session.user) {
+      UserService.setUserOffline(req.session.user.id);
+      delete req.session.user;
+    }
     return res.redirect('/');
   },
 
@@ -277,11 +287,14 @@ module.exports = {
             else{
               exclude = exclude.concat(_.map(requests, function(request){return request.id_requested;}));
               exclude.push(req.session.user.id);
-              User.find({id: {'!': exclude}}).exec(function(error, list){
+              User.find({id: {'!': exclude}}).exec(function(error, userList){
                 if(error)
                   return res.negotiate(error);
                 else {
-                  return res.view({list: list});
+                  userList.forEach(user => {
+                    user.online = UserService.isUserOnline(user.id);
+                  });
+                  return res.view({list: userList});
                 }
               });
             }
@@ -298,6 +311,7 @@ module.exports = {
     if(req.isSocket && req.session.user){
       Request.watch(req);
       Friend.watch(req);
+      UserService.setUserOnline(req.session.user.id);
     }
     return res.ok();
   },

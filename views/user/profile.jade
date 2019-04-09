@@ -118,6 +118,21 @@ block scripts
         });
       };
 
+      function setStatus(userId, status) {
+        const onlineClass = 'user-status--online';
+        const offlineClass = 'user-status--offline';
+        let statusBlock = $('div.user-' + userId + '-status span');
+        if (status === 'online') {
+          statusBlock.text('online');
+          statusBlock.removeClass(offlineClass);
+          statusBlock.addClass(onlineClass);
+        } else {
+          statusBlock.text('offline');
+          statusBlock.removeClass(onlineClass);
+          statusBlock.addClass(offlineClass);
+        }
+      }
+
       get_requests();
       get_friends();
 
@@ -222,5 +237,13 @@ block scripts
           get_friends();
         }
       });
+
+      io.socket.on('user_online', data => {
+        setStatus(data, 'online');
+      })
+
+      io.socket.on('user_offline', data => {
+        setStatus(data);
+      })
 
     });
