@@ -4,12 +4,12 @@ table.table.table-striped
     tr
       td
         div(class = ['user-avatar', 'user-status'])
-          img(src="/user/avatar/"+ user.id, width="60", height="60", alt=name)
+          img(src="/user/avatar/"+ user.username, width="60", height="60", alt=name)
           div(class = 'user-' + user.id + '-status')
             if user.online
               span.user-status--online online
             else
               span.user-status--offline offline
-      td.vmiddle= name
+      td.vmiddle = name
       td.vmiddle
         a.request(href="#", data-id=user.id) Добавить в друзья

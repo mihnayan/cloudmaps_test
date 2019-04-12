@@ -68,7 +68,7 @@ module.exports = {
         else{
           if(user.password == crypto.createHash('sha256').update(req.param('password')).digest('hex')){
             req.session.user = user;
-            return res.redirect('/user/profile/'+user.id);
+            return res.redirect('/user/profile/'+user.username);
           }
           else{
             res.view('user/error',{message: 'Неверный логин или пароль'});
@@ -81,22 +81,24 @@ module.exports = {
         return res.view();
       }
       else{
-        return res.redirect('/user/profile/'+req.session.user.id);
+        return res.redirect('/user/profile/'+req.session.user.username);
       }
     }
   },
 
   profile: function(req, res){
-    User.findOne(req.param('id')).exec(function(error, user){
-      if(error){
-        res.view('user/error',{message: 'Ошибка: ' + error.message});
-      }
-      else{
-        res.view({
-          user: _.omit(user, 'password')
-        });
-      }
-    });
+    User.findOne({
+        username: req.param('username')
+      }).exec(function(error, user){
+        if(error){
+          res.view('user/error',{message: 'Ошибка: ' + error.message});
+        }
+        else{
+          res.view({
+            user: _.omit(user, 'password')
+          });
+        }
+      });
   },
 
   activationEmail: function(req, res) {
@@ -234,9 +236,10 @@ module.exports = {
     var fs = require('fs');
     var avatar_dir = sails.config.appPath + '/avatars/';
     if(req.method == 'GET'){
-      var avatar = avatar_dir + req.param('id') + '.jpg';
+      var avatar = avatar_dir + req.param('username') + '.jpg';
       fs.stat(avatar, function(error, stats){
         if(error){
+          console.log(error);
           return res.sendfile(avatar_dir + 'default-avatar.jpg');
         }
         else if(stats.isFile()){
@@ -254,7 +257,7 @@ module.exports = {
         if(error)
           return res.negotiate(error);
         else{
-          fs.rename(files[0].fd, avatar_dir+req.session.user.id+'.jpg', function(error){
+          fs.rename(files[0].fd, avatar_dir+req.session.user.username+'.jpg', function(error){
             if(error)
               return res.negotiate(error);
             else

@@ -5,7 +5,7 @@ if friends.length
       tr
         td
           div(class = ['user-avatar', 'user-status'])
-            img(src="/user/avatar/" + friend.id, width="60", height="60" alt=name)
+            img(src="/user/avatar/" + friend.username, width="60", height="60" alt=name)
             div(class = 'user-' + friend.id + '-status')
               if friend.online
                 span.user-status--online online

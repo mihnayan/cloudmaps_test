@@ -5,7 +5,7 @@ if requests.length
       tr
         td
           div(class = ['user-avatar', 'user-status'])
-            img(src="/user/avatar/" + request.id, width="60", height="60" alt=name)
+            img(src="/user/avatar/" + request.username, width="60", height="60" alt=name)
             div(class = 'user-' + request.id + '-status')
               if request.online
                 span.user-status--online online
